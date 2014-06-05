@@ -9,4 +9,4 @@ very sample, two players(player1, player2), turn to put chess to chessboard. if 
 2. UI
 3. welcome menu
 4. intgreted to other platforms (android, ios etc)
-
+5. AI support
