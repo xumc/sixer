@@ -19,18 +19,18 @@ var MainLayer = cc.Layer.extend({
             //玩家属性
             this.currentUser = 1;
             this.players = {
-            	1: {chessColor: cc.c4f(1,0,0,1), dColor: "红色"}, 
-                2: {chessColor: cc.c4f(0,1,0,1), dColor: "绿色"}
+            	1: {chessColor: cc.c4f(1,0,0,1), dColor: "红色", eatNum: 0}, 
+                2: {chessColor: cc.c4f(0,1,0,1), dColor: "绿色", eatNum: 0}
             };
 
             //初始化棋局
             this.chessboard = [
-            	[1, 2, 1, 1, 1, 2],
-            	[1, 2, 1, 1, 1, 2],
-            	[1, 2, 1, 1, 1, 2],
-	        	[1, 2, 1, 1, 1, 2],
-            	[1, 2, 1, 1, 1, 2],
-            	[0, 0, -1, 0, 0, 1]
+            	[0, 0, 0, 0, 0, 0],
+            	[0, 0, 0, 0, 0, 0],
+            	[0, 0, 0, 0, 0, 0],
+	        	[0, 0, 0, 0, 0, 0],
+            	[0, 0, 0, 0, 0, 0],
+            	[0, 0, 0, 0, 0, 0]
             ];
 
             this.toEatNumber = 0;
@@ -38,7 +38,7 @@ var MainLayer = cc.Layer.extend({
 
 	        bRet = true;
         }
-        this.tip = "现在轮到" + this.players[this.currentUser].dColor + "下棋了", "Impact";
+        this.tip = "现在轮到" + this.players[this.currentUser].dColor + "下棋了";
         this.refresh();
 
         return bRet;
@@ -48,18 +48,19 @@ var MainLayer = cc.Layer.extend({
         var x = parseInt(location.x / this.cellSize);
         var y = parseInt((this.winSize.height - location.y) / this.cellSize);
 
-        console.log(x + "  " + y);
-
         if(x > 5 || y > 5 || x < 0 || y < 0){return;}
 
         if(this.mStatus == 'eat'){
             if(this.toEatNumber > 0 && this.chessboard[y][x] == (this.currentUser == 1 ? 2 : 1)){
                this.chessboard[y][x] = -1;
                this.toEatNumber--;
+               this.players[this.currentUser].eatNum++;
+               this.tip = "现在进入吃模式，你可以点选" + this.toEatNumber + "个对方棋子";
             }
             if(this.toEatNumber <= 0){
                 this.mStatus = 'put';
                 this.currentUser = this.currentUser == 1 ? 2 : 1;
+                this.tip = "现在轮到" + this.players[this.currentUser].dColor + "下棋了";
             }
           
         }else if(this.mStatus == 'put'){
@@ -77,40 +78,74 @@ var MainLayer = cc.Layer.extend({
                   return;
                 }
                 this.currentUser = this.currentUser == 1 ? 2 : 1;
+                this.tip = "现在轮到" + this.players[this.currentUser].dColor + "下棋了";
             }
         }
         if(this.allPostionHasChess()){
-            this.tip = "和棋了";
+            if(this.players[1].eatNum > this.players[2].eatNum){
+                this.tip = "红方赢了";
+            }else if(this.players[1].eatNum > this.players[2].eatNum){
+                this.tip = "绿方赢了";
+            }else{
+                this.tip = "和棋了";
+            }
             this.refresh();
             return;
         }
 
-        this.tip = "现在轮到" + this.players[this.currentUser].dColor + "下棋了", "Impact";
         this.refresh();
 
     },
     onTouchEnded: function(touch, event){
     	
     },
-    judge: function(curPositionY, curPositionX){
-        if(this.chessboard[curPositionY])
-        var allYLine = true;
-        for(var i=0;i< 6; i++){
-            if(this.chessboard[curPositionY][i] != this.currentUser){
-               allYLine = false; 
-            }
-        }
-        if(allYLine)
+    judge: function(cy, cx){
+        //横
+        if(this._isAllSix([cy,0],[cy,1],[cy,2],[cy,3],[cy,4],[cy,5])){
             this.toEatNumber++;
-
-        var allXLine = true;
-        for(var j=0;j< 6;j++){
-            if(this.chessboard[j][curPositionX] != this.currentUser){
-                allXLine = false;
-            }
         }
-        if(allXLine)
+        //竖
+        if(this._isAllSix([0, cx],[1, cx],[2, cx],[3, cx],[4, cx],[5, cx])){
             this.toEatNumber++;
+        }
+        //竖日
+        if(this._isAllSix([cy-2,cx-1],[cy-2,cx],[cy-1,cx-1],[cy-1,cx],[cy,cx-1],[cy,cx])){
+            this.toEatNumber++;
+        }
+        if(this._isAllSix([cy-2,cx],[cy-2,cx+1],[cy-1,cx],[cy-1,cx+1],[cy,cx],[cy,cx+1])){
+            this.toEatNumber++;
+        } 
+        if(this._isAllSix([cy-1,cx-1],[cy-1,cx],[cy,cx-1],[cy,cx],[cy+1,cx-1],[cy+1,cx])){
+            this.toEatNumber++;
+        } 
+        if(this._isAllSix([cy-1,cx],[cy-1,cx+1],[cy,cx],[cy,cx+1],[cy+1,cx],[cy+1,cx+1])){
+            this.toEatNumber++;
+        }
+        if(this._isAllSix([cy,cx-1],[cy,cx],[cy+1,cx-1],[cy+1,cx],[cy+2,cx-1],[cy+2,cx])){
+            this.toEatNumber++;
+        } 
+        if(this._isAllSix([cy,cx],[cy,cx+1],[cy+1,cx],[cy+1,cx+1],[cy+2,cx],[cy+2,cx+1])){
+            this.toEatNumber++;
+        }
+        //横日
+        if(this._isAllSix([cy-1,cx-2],[cy,cx-2],[cy-1,cx-1],[cy,cx-1],[cy-1,cx],[cy,cx])){
+            this.toEatNumber++;
+        }
+        if(this._isAllSix([cy,cx-2],[cy+1,cx-2],[cy,cx-1],[cy+1,cx-1],[cy,cx],[cy+1,cx])){
+            this.toEatNumber++;
+        }
+        if(this._isAllSix([cy-1,cx-1],[cy,cx-1],[cy-1,cx],[cy,cx],[cy-1,cx+1],[cy,cx+1])){
+            this.toEatNumber++;
+        }
+        if(this._isAllSix([cy,cx-1],[cy+1,cx-1],[cy,cx],[cy+1,cx],[cy,cx+1],[cy+1,cx+1])){
+            this.toEatNumber++;
+        }
+        if(this._isAllSix([cy-1,cx],[cy,cx],[cy-1,cx+1],[cy,cx+1],[cy-1,cx+2],[cy,cx+2])){
+            this.toEatNumber++;
+        }
+        if(this._isAllSix([cy,cx],[cy+1,cx],[cy,cx+1],[cy+1,cx+1],[cy,cx+2],[cy+1,cx+2])){
+            this.toEatNumber++;
+        }
 
     },
     refresh: function(){
@@ -140,7 +175,8 @@ var MainLayer = cc.Layer.extend({
         }
         //tip label
         this.removeChild(this.lblTip);
-        this.lblTip = cc.LabelTTF.create(this.tip, "Impact", 30);
+        var tip = "红方：" + this.players[1].eatNum + "\t绿方：" + this.players[2].eatNum + "\n" + this.tip;
+        this.lblTip = cc.LabelTTF.create(tip, "Impact", 16);
         this.addChild(this.lblTip, 5);
         this.lblTip.setPosition(this.winSize.width/2, 100);
         this.lblTip.setOpacity(200);
@@ -156,5 +192,17 @@ var MainLayer = cc.Layer.extend({
             }
         }
         return ret;    
+    },
+    _isAllSix: function(a1,a2,a3,a4,a5,a6){
+        var args = [a1,a2,a3,a4,a5,a6];
+        for(var p in args){
+            var iy = args[p][0];
+            var ix = args[p][1];
+            if(iy<0||iy>5||ix<0||ix>5){return false;}
+            if(this.chessboard[args[p][0]][args[p][1]] != this.currentUser){
+                return false;
+            }
+        }
+        return true;
     }
 });
