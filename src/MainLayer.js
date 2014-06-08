@@ -25,12 +25,12 @@ var MainLayer = cc.Layer.extend({
 
             //初始化棋局
             this.chessboard = [
-            	[0, 0, 0, 0, 0, 0],
-            	[0, 0, 0, 0, 0, 0],
-            	[0, 0, 0, 0, 0, 0],
-	        	[0, 0, 0, 0, 0, 0],
-            	[0, 0, 0, 0, 0, 0],
-            	[0, 0, 0, 0, 0, 0]
+            	[1, 1, 1, 1, 1, 1],
+            	[1, 1, 0, 1, 1, 1],
+            	[1, 2, 1, 0, 2, 1],
+	        	[1, 2, 1, 0, 2, 1],
+            	[1, 2, 1, 1, 1, 1],
+            	[1, 2, 1, 1, 1, 1]
             ];
 
             this.toEatNumber = 0;
@@ -90,6 +90,8 @@ var MainLayer = cc.Layer.extend({
                 this.tip = "和棋了";
             }
             this.refresh();
+            var resultLayer = new ResultLayer;
+            cc.Director.getInstance().getRunningScene().addChild(resultLayer,99);
             return;
         }
 

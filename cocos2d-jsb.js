@@ -31,6 +31,8 @@ require("jsb.js");
 var appFiles = [
     'src/resource.js',
     'src/MainLayer.js',
+    'src/WelcomeLayer.js',
+    'src/ResultLayer.js',
     'src/myApp.js',
 ];
 

@@ -27,7 +27,7 @@
 (function () {
     var d = document;
     var c = {
-        COCOS2D_DEBUG:0, //0 to turn debug off, 1 for basic debug, and 2 for full debug
+        COCOS2D_DEBUG:2, //0 to turn debug off, 1 for basic debug, and 2 for full debug
         box2d:false,
         chipmunk:false,
         showFPS:false,
@@ -40,6 +40,8 @@
         appFiles:[
             'src/resource.js',
             'src/MainLayer.js',
+            'src/WelcomeLayer.js',
+            'src/ResultLayer.js',
             'src/myApp.js'//add your own files in order here
         ]
     };
