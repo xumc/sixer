@@ -11,3 +11,4 @@ very sample, two players(player1, player2), turn to put chess to chessboard. if 
 4. intgreted to other platforms (android, ios etc)
 5. AI support
 6. blutooth,wifi
+7. online
